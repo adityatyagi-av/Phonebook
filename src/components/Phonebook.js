@@ -2,6 +2,13 @@ import axios from 'axios'
 import React,{useState,useEffect} from 'react'
 import phoneServices from './phone'
 
+const Person=({person,deleteElement})=>{
+  return(
+    <li>{person.name} :{person.number} <button onClick={deleteElement}>Delete</button>
+    </li>
+    
+  )
+}
 
 
 export default function Phonebook() {
@@ -11,6 +18,19 @@ export default function Phonebook() {
     const [newNumber, setNewNumber] = useState('')
     const [filtered, setFiltered] = useState('')
     const [showAll, setShowAll] = useState(true)
+    
+    const deleteAll=(id)=>{
+      if(window.confirm("Do you really want to delete")){
+        phoneServices
+      .deleteIt(id)
+      .then(requestedData=>{
+        console.log("element deleted")
+      })
+      }
+      
+    }
+
+
 
     useEffect(() => {
       phoneServices
@@ -89,8 +109,8 @@ export default function Phonebook() {
          ).map(person=>{
         
             return(
-              <li key={person.id}>{person.name} : {person.number}</li>
-            )
+              <Person key={person.id} person={person} deleteElement={()=>deleteAll(person.id)}/>
+              )
           })
         
     } 
