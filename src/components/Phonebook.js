@@ -1,5 +1,8 @@
 import axios from 'axios'
 import React,{useState,useEffect} from 'react'
+import phoneServices from './phone'
+
+
 
 export default function Phonebook() {
     const [persons, setPersons] = useState([
@@ -10,11 +13,11 @@ export default function Phonebook() {
     const [showAll, setShowAll] = useState(true)
 
     useEffect(() => {
-        axios
-        .get('http://localhost:3001/persons')
-        .then((response)=>{
-                console.log(response)
-                setPersons(response.data)
+      phoneServices
+      .getAll() 
+      .then(requestedData=>{
+                console.log(requestedData)
+                setPersons(requestedData)
         }   
         )
       
@@ -40,14 +43,19 @@ export default function Phonebook() {
     const found=persons.some(person=>person.name === newName)
     console.log(found)
     if(!found){
-      console.log('already in the list')
+      console.log('Not found in the list')
       const obj={
         name: newName,
         id: persons.length +1,
         number: newNumber
       }
-      console.log(obj)
-      setPersons(persons.concat(obj))
+      phoneServices
+      .create(obj)
+      .then(requestedData=>{
+        console.log(requestedData)
+        setPersons(persons.concat(requestedData))
+  
+      })
       }
    
       else{
@@ -77,7 +85,7 @@ export default function Phonebook() {
     <ul>
      
         {persons.filter((person)=>
-         person.name.toLowerCase().includes(filtered)
+         person.name.toLowerCase().includes(filtered.toLowerCase())
          ).map(person=>{
         
             return(
