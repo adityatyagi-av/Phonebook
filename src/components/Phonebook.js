@@ -56,30 +56,39 @@ export default function Phonebook() {
     const numberAdd=(event)=>{
     event.preventDefault()
     
+  //  console.log(newName)
+    // console.log(typeof(event.target.value))
+    // console.log(event.target.value)
    
-    console.log(typeof(event.target.value))
- 
-    //function to check name
-    const found=persons.some(person=>person.name === newName)
-    console.log(found)
-    if(!found){
-      console.log('Not found in the list')
+    const findName=persons.find(per=> per.name.toLowerCase() === `${newName.toLowerCase()}`)
+    // console.log(findName.name)
+    if(findName === undefined){
       const obj={
-        name: newName,
-        id: persons.length +1,
-        number: newNumber
+            name: newName,
+            id: persons.length +1,
+            number: newNumber
+          }
+          phoneServices
+            .create(obj)
+            .then(requestedData=>{
+              console.log(requestedData)
+              setPersons(persons.concat(requestedData))
+        
+            })
       }
-      phoneServices
-      .create(obj)
-      .then(requestedData=>{
-        console.log(requestedData)
-        setPersons(persons.concat(requestedData))
-  
-      })
-      }
-   
       else{
-      alert(`${newName} is already in the phonebook, Save with new name`)
+        if(window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)){
+        const obj={
+          name: newName,
+          id: findName.id,
+          number: newNumber
+        }   
+        phoneServices
+        .update(findName.id,obj)
+        .then(requestedData=>{
+          console.log('data has been updated')
+        })
+        }
    
       } 
     }
